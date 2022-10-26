@@ -11,7 +11,7 @@ from datetime import datetime
 def connect_to_sql():
     conn = mysql.connector.connect(user='root', password='password',
                                   host='127.0.0.1',
-                                  database='cna340')
+                                  database='cne340')
     return conn
 # Create the table structure
 def create_tables(cursor, table):
