@@ -9,9 +9,9 @@ from datetime import datetime
 # Connect to database
 # You may need to edit the connect function based on your local settings.
 def connect_to_sql():
-    conn = mysql.connector.connect(user='pythoneverything', password='python123',
-                                  host='18.216.19.4',
-                                  database='cna330')
+    conn = mysql.connector.connect(user='root', password='password',
+                                  host='127.0.0.1',
+                                  database='cna340')
     return conn
 # Create the table structure
 def create_tables(cursor, table):
