@@ -1,17 +1,15 @@
 import mysql.connector
-import sys
-import json
-import urllib.request
-import os
 import time
-from datetime import datetime
+import json
+import requests
+from datetime import date
+import html2text
 
 # Connect to database
 # You may need to edit the connect function based on your local settings.
 def connect_to_sql():
-    conn = mysql.connector.connect(user='root', password='password',
-                                  host='127.0.0.1',
-                                  database='cne340')
+    conn = mysql.connector.connect(user='root', password='',
+                                   host='127.0.0.1', database='cne340')
     return conn
 # Create the table structure
 def create_tables(cursor, table):
