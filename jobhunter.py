@@ -98,12 +98,13 @@ def jobhunt(cursor, arg_dict):
     jobpage = fetch_new_jobs(arg_dict)
     # print (jobpage)
     add_or_delete_job(cursor, jobpage)
-def add_or_delete_job(cursor, jobpage):
-    ## Add your code here to parse the job page
-    for jobdetails in jobpage:
-    ## Add in your code here to check if the job already exists in the DB
+def add_or_delete_job(jobpage, cursor):
+    # Add your code here to parse the job page
+    for jobdetails in jobpage['jobs']:  # EXTRACTS EACH JOB FROM THE JOB LIST. It errored out until I specified jobs. This is because it needs to look at the jobs dictionary from the API. https://careerkarma.com/blog/python-typeerror-int-object-is-not-iterable/
+        # Add in your code here to check if the job already exists in the DB
         check_if_job_exists(cursor, jobdetails)
-        is_job_found = len(cursor.fetchall()) > 0
+        is_job_found = len(
+        cursor.fetchall()) > 0  # https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
         if is_job_found:
         ## EXTRA CREDIT: Add your code to delete old entries
             now = datetime.now()
@@ -115,14 +116,15 @@ def add_or_delete_job(cursor, jobpage):
                       ", Created at: " + jobdetails["created_at"] +
                       ", JobID: " + jobdetails['id'])
                 delete_job(cursor, jobdetails)
+
         else:
-            ## Add in your code here to notify the user of a new posting
-            print("New job is found: " +
+              print("New job is found: " +
                   jobdetails["title"] +
                   " from " + jobdetails["company"] +
                   ", Created at: " + jobdetails["created_at"] +
                   ", JobID: " + jobdetails['id'])
-            add_new_job(cursor, jobdetails)
+        add_new_job(cursor, jobdetails)
+            # Add in your code here to notify the user of a new posting. This code will notify the new user
 # Setup portion of the program. Take arguments and set up the script
 # You should not need to edit anything here.
 def main():
