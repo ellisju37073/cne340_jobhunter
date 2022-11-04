@@ -86,8 +86,8 @@ def add_or_delete_job(jobpage, cursor):
         is_job_found = len(
         cursor.fetchall()) > 0  # https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
         now = datetime.now()
-            job_date = datetime.strptime(jobdetails['created_at'], "%a %b %d %H:%M:%S %Z %Y")
-            if (now - job_date).days > 30:
+        job_date = datetime.strptime(jobdetails['created_at'], "%a %b %d %H:%M:%S %Z %Y")
+        if (now - job_date).days > 30:
                 print("Delete job: " +
                       jobdetails["title"] +
                       " from " + jobdetails["company"] +
