@@ -5,12 +5,11 @@ import requests
 from datetime import date
 import html2text
 
-
-# Connect to database
+ #Connect to database
 # You may need to edit the connect function based on your local settings.#I made a password for my database because it is important to do so. Also make sure MySQL server is running or it will not connect
 def connect_to_sql():
     conn = mysql.connector.connect(user='root', password='',
-                                   host='127.0.0.1', database='cne340')
+                                   host='localhost', database='cne340')
     return conn
 
 
@@ -63,7 +62,7 @@ def delete_job(cursor, jobdetails):
 
 # Grab new jobs from a website, Parses JSON code and inserts the data into a list of dictionaries do not need to edit
 def fetch_new_jobs():
-    query = requests.get("https://remotive.io/api/remote-jobs")
+    query = requests.get(" http://remotive.com/api/remote-jobs")
     datas = json.loads(query.text)
 
     return datas
@@ -74,8 +73,8 @@ def jobhunt(cursor):
     # Fetch jobs from website
     jobpage = fetch_new_jobs()  # Gets API website and holds the json data in it as a list
     # use below print statement to view list in json format
-    # print(jobpage)
-    add_or_delete_job(jobpage, cursor)
+    print(jobpage)
+    
 
 
 def add_or_delete_job(jobpage, cursor):
