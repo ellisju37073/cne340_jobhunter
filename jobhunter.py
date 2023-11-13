@@ -1,3 +1,8 @@
+#Theodora Kochel
+#CNE340 Fall 11/12/23
+#This code is to go onto WAMP for job searching.
+#Adam Johnson worked with me on this code.
+
 import mysql.connector
 import time
 import json
