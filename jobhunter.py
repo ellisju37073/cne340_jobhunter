@@ -1,13 +1,13 @@
 #Theodora Kochel
 #CNE340 Fall 11/12/23
-#This code is to go onto WAMP for job searching.
+#This code is for job searching on remotive.com.  This will go into a WAMP server.
 #Adam Johnson worked with me on this code.
 
 import mysql.connector
 import time
 import json
 import requests
-from datetime import date
+from datetime import datetime
 import html2text
 
 
@@ -24,8 +24,8 @@ def create_tables(cursor):
     # Creates table
     # Must set Title to CHARSET utf8 unicode Source: http://mysql.rjweb.org/doc.php/charcoll.
     # Python is in latin-1 and error (Incorrect string value: '\xE2\x80\xAFAbi...') will occur if Description is not in unicode format due to the json data
-    cursor.execute('''CREATE TABLE IF NOT EXISTS jobs (id INT PRIMARY KEY auto_increment, Job_id varchar(50) , 
-    company varchar (300), Created_at DATE, url varchar(30000), Title CHARSET utf8, Description LONGBLOB ); ''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS jobs (id INT PRIMARY KEY auto_increment, Job_id VARCHAR(50) , 
+    company VARCHAR (300), Created_at DATE, url TEXT, Title VARCHAR(255), Description TEXT ); ''')
 
 
 # Query the database.
@@ -39,9 +39,8 @@ def query_sql(cursor, query):
 def add_new_job(cursor, jobdetails):
     # extract all required columns
     description = html2text.html2text(jobdetails['description'])
-    date = jobdetails['publication_date'][0:10]
-    query = cursor.execute("INSERT INTO jobs( Description, Created_at " ") "
-               "VALUES(%s,%s)", (  description, date))
+    date = datetime.now().date()
+    query = cursor.execute("INSERT INTO jobs(Title, Description Created_at) VALUES(%s,%s,%s)", (jobdetails['title'], description, date))
      # %s is what is needed for Mysqlconnector as SQLite3 uses ? the Mysqlconnector uses %s
     return query_sql(cursor, query)
 
@@ -49,13 +48,22 @@ def add_new_job(cursor, jobdetails):
 # Check if new job
 def check_if_job_exists(cursor, jobdetails):
     ##Add your code here
-    query = "SELECT * FROM jobs WHERE Job_id = %s"
-    return query_sql(cursor, query)
+    job_id = jobdetails.get("id", None)
+    if job_id is not None:
+        query = "SELECT * FROM jobs WHERE Job_id = %s"
+        cursor.execute(query, (job_id))
+        return cursor.fetchall()
+
+    else:
+        print("Error job id is missing")
+        return []
+
 
 # Deletes job
 def delete_job(cursor, jobdetails):
     ##Add your code here
-    query = "DELETE FROM jobs WHERE Created_at < DATE_SUB(CURDATE(), INTERVAL 14 DAY)"
+    query = "DELETE FROM jobs WHERE Created_at < DATE_SUB(CURDATE(), INTERVAL %S DAY)"
+    cursor.execute(query, (14))
     return query_sql(cursor, query)
 
 
@@ -80,18 +88,15 @@ def add_or_delete_job(jobpage, cursor):
     # Add your code here to parse the job page
     for jobdetails in jobpage['jobs']:  # EXTRACTS EACH JOB FROM THE JOB LIST. It errored out until I specified jobs. This is because it needs to look at the jobs dictionary from the API. https://careerkarma.com/blog/python-typeerror-int-object-is-not-iterable/
         # Add in your code here to check if the job already exists in the DB
-        check_if_job_exists(cursor, jobdetails)
-        is_job_found = len(
-        cursor.fetchall()) > 0  # https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
+        result = check_if_job_exists(cursor, jobdetails)
+        is_job_found = len(result) < 0 #https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
         if is_job_found:
             delete_job(cursor, jobdetails)
         else:
             add_new_job(cursor, jobdetails)
-        print("New job added:", jobdetails['title'])
             # INSERT JOB
             # Add in your code here to notify the user of a new posting. This code will notify the new user
-
-
+            print("New job added:", jobdetails['title'])
 
 # Setup portion of the program. Take arguments and set up the script
 # You should not need to edit anything here.
