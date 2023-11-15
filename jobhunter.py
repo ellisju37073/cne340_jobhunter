@@ -39,8 +39,12 @@ def query_sql(cursor, query):
 def add_new_job(cursor, jobdetails):
     # extract all required columns
     description = html2text.html2text(jobdetails['description'])
-    date = datetime.now().date()
-    query = cursor.execute("INSERT INTO jobs(Title, Description Created_at) VALUES(%s,%s,%s)", (jobdetails['title'], description, date))
+    date = 0
+    title = jobdetails['title']
+    job_id = 0
+    company = 0
+    url = 0
+    query = cursor.execute("INSERT INTO jobs(Job_id, company, Created_at, url, Title, Description) VALUES(%s,%s,%s,%s,%s,%s)", (job_id, company, date, url, title, description))
      # %s is what is needed for Mysqlconnector as SQLite3 uses ? the Mysqlconnector uses %s
     return query_sql(cursor, query)
 
@@ -60,7 +64,7 @@ def check_if_job_exists(cursor, jobdetails):
 
 
 # Deletes job
-def delete_job(cursor, jobdetails):
+def delete_job(cursor):
     ##Add your code here
     query = "DELETE FROM jobs WHERE Created_at < DATE_SUB(CURDATE(), INTERVAL %S DAY)"
     cursor.execute(query, (14))
@@ -91,12 +95,14 @@ def add_or_delete_job(jobpage, cursor):
         result = check_if_job_exists(cursor, jobdetails)
         is_job_found = len(result) < 0 #https://stackoverflow.com/questions/2511679/python-number-of-rows-affected-by-cursor-executeselect
         if is_job_found:
-            delete_job(cursor, jobdetails)
+            print("job exists")
         else:
             add_new_job(cursor, jobdetails)
             # INSERT JOB
             # Add in your code here to notify the user of a new posting. This code will notify the new user
             print("New job added:", jobdetails['title'])
+
+    delete_job(cursor)
 
 # Setup portion of the program. Take arguments and set up the script
 # You should not need to edit anything here.
