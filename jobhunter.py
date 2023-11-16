@@ -1,7 +1,7 @@
 #Theodora Kochel
 #CNE340 Fall 11/12/23
 #This code is for job searching on remotive.com.  This will go into a WAMP server.
-#Adam Johnson worked with me on this code.
+#Adam Johnson worked with me on this code and also Brian Huang (TA).
 
 import mysql.connector
 import time
@@ -37,12 +37,13 @@ def query_sql(cursor, query):
 
 # Add a new job
 def add_new_job(cursor, jobdetails):
+    print(jobdetails)
     # extract all required columns
     description = html2text.html2text(jobdetails['description'])
-    date = 0
+    date = jobdetails['publication_date'][0:10]
     title = jobdetails['title']
     job_id = 0
-    company = 0
+    company = jobdetails['company']
     url = 0
     query = cursor.execute("INSERT INTO jobs(Job_id, company, Created_at, url, Title, Description) VALUES(%s,%s,%s,%s,%s,%s)", (job_id, company, date, url, title, description))
      # %s is what is needed for Mysqlconnector as SQLite3 uses ? the Mysqlconnector uses %s
